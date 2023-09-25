@@ -1,3 +1,5 @@
+package Week_1;
+
 /**
  * My First Program
  * @author Masego
