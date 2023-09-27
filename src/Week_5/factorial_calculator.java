@@ -1,3 +1,5 @@
+package Week_5;
+
 import java.util.Scanner;
 public class factorial_calculator {
     public static void main(String[] args) {

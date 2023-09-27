@@ -1,3 +1,5 @@
+package Week_5;
+
 import java.util.*;
 import java.util.Random;
 public class guessing_game {
