@@ -1,3 +1,4 @@
+package Week_2;
 
 import java.util.*;
 public class Exercise3_2 {

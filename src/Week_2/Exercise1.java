@@ -1,3 +1,4 @@
+package Week_2;
 
 import java.util.*;
 //This will import scanner which allows us to take user input from the console

@@ -1,3 +1,5 @@
+package Week_3;
+
 import java.util.*;
 public class L3E2 {
     public static void main(String[] args) {
