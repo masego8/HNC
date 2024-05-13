@@ -1,4 +1,6 @@
 123356,test ,account, manager,admin
-987654,test2 ,account, manager,admin2
+123356,test2 ,account, crew,admin2
 155641,masego ,mathibako,crew,mmathibako@workplace.com
-864114,john ,doe,crew,jdoe@workplace.com
+483388,john ,doe,crew,jdoe@workplace.com
+406611,ot ,dafinone,crew,odafinone@workplace.com
+713282,carlos ,carlson,crew,ccarlson@workplace.com

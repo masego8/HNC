@@ -1,11 +1,14 @@
 package EMS_Project;
 
-import Week_12.Student;
 
 import java.util.*;
 import java.io.*;
 
+// Employee Management System (EMS) class to manage staff within an organisation
+
 public class ems {
+
+    //This displays the manager menu for users with admin privileges like managers
     public static void managerMenu(ArrayList<Staff> employees) {
         Scanner navigation = new Scanner(System.in);
         int nav;
@@ -19,7 +22,7 @@ public class ems {
                     "Enter a number from 0 to 3:");
 
             nav = navigation.nextInt();
-            //navigation.nextLine();  // Consume the newline character
+
 
             if (nav == 1) {
                 addEmployee();
@@ -36,6 +39,7 @@ public class ems {
         } while (nav != 0);
     }
 
+    //This menu is for normal staff with less privileges
     public static void crewMenu(ArrayList<Staff> employees) {
         Scanner navigation = new Scanner(System.in);
         int nav;
@@ -62,33 +66,38 @@ public class ems {
         } while (nav != 0);
     }
 
+    // This loads employee details from a text file
+
     public static ArrayList<Staff> loadFile(String filename) {
         List<String> staffDetails;
         ArrayList<Staff> thisStaff = new ArrayList<>();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(filename));
+        try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             String line = in.readLine();
             while (line != null) {
-                staffDetails = Arrays.asList(line.split(","));
-                Staff newStaff = new Staff();
-                newStaff.employeeId = Integer.parseInt(staffDetails.get(0));
-                newStaff.firstname = staffDetails.get(1);
-                newStaff.surname = staffDetails.get(2);
-                newStaff.role = staffDetails.get(3);
-                String email = newStaff.firstname.substring(0, 1).toLowerCase() + newStaff.surname.toLowerCase() + "@workplace.com";
-                newStaff.email = email;
-                thisStaff.add(newStaff);
+                if (!line.trim().isEmpty()) {
+                    staffDetails = Arrays.asList(line.split(","));
+                    if (staffDetails.size() == 5) {
+                        Staff newStaff = new Staff();
+                        newStaff.employeeId = Integer.parseInt(staffDetails.get(0).trim());
+                        newStaff.firstname = staffDetails.get(1).trim();
+                        newStaff.surname = staffDetails.get(2).trim();
+                        newStaff.role = staffDetails.get(3).trim();
+                        String email = newStaff.firstname.substring(0, 1).toLowerCase() + newStaff.surname.toLowerCase() + "@workplace.com";
+                        newStaff.email = email;
+                        thisStaff.add(newStaff);
+                    } else {
+                        System.out.println("Invalid line format: " + line);
+                    }
+                }
                 line = in.readLine();
-
             }
-
         } catch (IOException e) {
             System.out.println("Error occurred reading from file: " + e.toString());
         }
-
         return thisStaff;
     }
 
+    //This handles the login process for this program
     public static void login(ArrayList<Staff> employees) {
         Scanner input = new Scanner(System.in);
         int loginAttempts = 0;
@@ -112,10 +121,9 @@ public class ems {
                 } else {
                     System.out.println("Unknown role: " + userRole);
                 }
-                // Proceed with the rest of your program or menu
-                return; // Break out of the loop if login is successful
+                return;
             } else {
-                System.out.println("Login failed. Invalid username or password. Attempts left: " + (maxLoginAttempts - loginAttempts - 1));
+                System.out.println("Login failed. Invalid email or password. Attempts left: " + (maxLoginAttempts - loginAttempts - 1));
                 loginAttempts++;
             }
 
@@ -124,26 +132,31 @@ public class ems {
         System.out.println("Maximum login attempts reached. Exiting the program.");
     }
 
+    //Authenticates the user and allows them to login if the correct credentials are used.
     private static String authenticateUser(String enteredUsername, String enteredPassword) {
         try (BufferedReader reader = new BufferedReader(new FileReader("src/EMS_Project/employeeDetails.txt"))) {
             String line;
 
             while ((line = reader.readLine()) != null) {
                 String[] employeeData = line.split(",");
-                String storedUsername = employeeData[4].trim(); // Assuming username is stored in the second column
-                String storedPassword = employeeData[1].trim(); // Assuming password is stored in the third column
+                String storedUsername = employeeData[4].trim();
+                String storedPassword = employeeData[1].trim();
 
                 if (enteredUsername.equals(storedUsername) && enteredPassword.equals(storedPassword)) {
-                    return employeeData[3].trim(); // Authentication successful
+                    return employeeData[3].trim();
                 }
             }
         } catch (IOException e) {
             System.err.println("Error reading employee details file: " + e.getMessage());
         }
 
-        return null; // Authentication failed
+        return null;
     }
+
+    //This reads data from the text file and adds it in to an employee list which prints out all the staff member names
     public static void displayEmployee(ArrayList<Staff> employees) {
+
+        List<String> employeeList = readEmployeeFile("src/EMS_Project/employeeDetails.txt");
 
         try (BufferedReader reader = new BufferedReader(new FileReader("src/EMS_Project/employeeDetails.txt"))) {
             int staffCount = 0;
@@ -157,13 +170,21 @@ public class ems {
             System.err.println("Error reading the file: " + e.getMessage());
         }
 
-        for (Staff employee : employees) {
 
-            System.out.println(employee.firstname.toLowerCase()
-                    + employee.surname.toLowerCase());;
-        }
+            System.out.println("List of Employees:");
+            for (int i = 0; i < employeeList.size(); i++) {
+                String[] employeeData = employeeList.get(i).split(",");
+                String firstName = employeeData[1].trim();
+                String surname = employeeData[2].trim();
+                int employeeId = Integer.parseInt(employeeData[0].trim());
+
+                System.out.println(firstName + " " + surname);
+            }
+
         System.out.println("");
     }
+
+    // This adds employees asking for their name and surname. A Id number is generated and a work email is also created.
     public static void addEmployee() {
         String nav2;
         do {
@@ -185,9 +206,9 @@ public class ems {
                 surname = input.nextLine().trim();
             } while (surname.length() < 2);
 
-            Staff staff = new Staff();  // Create an instance of the Staff class
+            Staff staff = new Staff();
 
-            // Get and validate the role input
+
             do {
                 System.out.println("Enter Role (Options: Crew or Manager): ");
                 staff.role = input.nextLine().trim();
@@ -213,6 +234,8 @@ public class ems {
         } while (nav2.equals("y"));
 
     }
+
+    // This allows users with admin access to remove employees by choosing an index from a list
     public static void removeEmployee() {
 
         List<String> employeeList = readEmployeeFile("src/EMS_Project/employeeDetails.txt");
@@ -222,7 +245,7 @@ public class ems {
             return;
         }
 
-        // Display the list of employees with index
+
         System.out.println("List of Employees:");
         for (int i = 0; i < employeeList.size(); i++) {
             String[] employeeData = employeeList.get(i).split(",");
@@ -242,7 +265,7 @@ public class ems {
             return;
         }
 
-        // Remove the selected employee
+
         String removedEmployee = employeeList.remove(employeeToRemoveIndex - 1);
         String[] removedEmployeeData = removedEmployee.split(",");
         String removedEmployeeName = removedEmployeeData[1].trim() + " " + removedEmployeeData[2].trim();
@@ -250,7 +273,7 @@ public class ems {
 
         System.out.println("Removed Employee: Employee ID: " + removedEmployeeId + ", Name: " + removedEmployeeName);
 
-        // Write the updated list back to the file
+
         writeEmployeeFile("src/EMS_Project/employeeDetails.txt", employeeList);
         System.out.println("Employee list updated successfully.");
     }
@@ -283,7 +306,7 @@ public class ems {
 
 
 
-    // ======================================MAIN PROGRAM========================================================
+    // =============================================MAIN PROGRAM========================================================
     public static void main(String[] args) {
 
 
